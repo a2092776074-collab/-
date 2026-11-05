@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "dsh-memory-system configuration (reference)",
+  "description": "参考 schema；当前版本的工具参数已内置，不强制读取本配置。",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "autoInject": {
+      "type": "boolean",
+      "default": true,
+      "description": "是否在每轮对话前注入相关记忆（只注入 relation/task/reference 分区）"
+    },
+    "maxItems": {
+      "type": "integer",
+      "default": 6,
+      "minimum": 1,
+      "maximum": 12
+    },
+    "maxChars": {
+      "type": "integer",
+      "default": 700,
+      "minimum": 200,
+      "maximum": 2000
+    }
+  }
+}

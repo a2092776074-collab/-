@@ -1,0 +1,70 @@
+{
+  "name": "dsh-memory-system",
+  "version": "0.1.1",
+  "description": "File-based memory for DSH agents: layers, FSRS-5 decay, cold archive, recall, zones, and optional auto-injection.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./manifest.json": "./manifest.json",
+    "./template": "./template",
+    "./scripts": "./scripts"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "manifest.json",
+    "locale",
+    "config.schema.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "PUBLISHING.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "template",
+    "scripts",
+    "test"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "memory",
+    "fsrs",
+    "forgetting",
+    "zones",
+    "auto-injection",
+    "ai-companion"
+  ],
+  "license": "MIT",
+  "author": "YuZai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/a2092776074-collab/-.git"
+  },
+  "homepage": "https://github.com/a2092776074-collab/-",
+  "bugs": {
+    "url": "https://github.com/a2092776074-collab/-/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/smoke.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-tools": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": {
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Memory System · Layers & Forgetting",
+    "description": "File-based AI memory: four layers, FSRS-5 decay, cold archive, keyword recall, zones and optional auto-injection."
+  }
+}

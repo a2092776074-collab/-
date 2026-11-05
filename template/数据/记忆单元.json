@@ -1,0 +1,11 @@
+[
+  {
+    "id": "case:first-lesson",
+    "title": "示例：第一次被纠正——先问再答",
+    "created": 1760000000000,
+    "importance": 2,
+    "zone": "task",
+    "source": "日记.md",
+    "note": "把 created 换成你的毫秒时间戳；这条只是示例，替换掉"
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "dsh-plugin-manifest/v1",
+  "name": "dsh-memory-system",
+  "displayName": "记忆体系 · Memory System",
+  "version": "0.1.1",
+  "description": "File-based memory for DSH agents: layers, FSRS-5 decay, cold archive, recall, zones, and optional auto-injection.",
+  "license": "MIT",
+  "author": "YuZai",
+  "hostOnly": true,
+  "capabilities": [
+    "memory.layers",
+    "memory.decay",
+    "memory.archive",
+    "memory.zones",
+    "memory.inject",
+    "memory.recall"
+  ],
+  "tools": [
+    "memory_init",
+    "memory_status",
+    "memory_recall",
+    "memory_review",
+    "memory_archive"
+  ],
+  "icon": "icon.svg"
+}

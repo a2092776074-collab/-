@@ -58,7 +58,11 @@ function nextS(S, D, r, g) {
 }
 
 // 单元 ID：kind:slug，kind 限定几种，避免把文件路径写进来
-const KINDS = ['case', 'diary', 'knowledge', 'ledger', 'anchor', 'episode']
+// 2026-11-07 补 session：昨天灌进 211 个 session:* 单元（历史会话索引），
+// 这份白名单没跟上，导致 memory-recall 一碰到就抛「ID 不合法」直接崩。
+// 2026-11-07 深夜：每日 ingest 会生成 conv:*（对话事卡），白名单又没跟上，recall 再次崩。
+// 教训：KINDS 应该跟着「产生单元的人」一起改，而不是等崩了再补。
+const KINDS = ['case', 'diary', 'knowledge', 'ledger', 'anchor', 'episode', 'session', 'conv', 'task', 'goal']
 const validId = (id) => typeof id === 'string' && id.length <= 200 && KINDS.some((k) => id.startsWith(k + ':'))
 
 function loadJson(p, fallback) {

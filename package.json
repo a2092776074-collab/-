@@ -1,6 +1,6 @@
 {
   "name": "dsh-memory-system",
-  "version": "0.2.1",
+  "version": "0.3.2",
   "description": "File-based memory for DSH agents: layers, FSRS-5 decay, cold archive, recall, zones, and optional auto-injection.",
   "type": "module",
   "main": "lib/index.js",

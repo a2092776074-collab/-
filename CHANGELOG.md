@@ -1,4 +1,17 @@
-# Changelog
+﻿# Changelog
+
+## 0.3.3 — 2026-11-11
+
+- **修 `reference:` 单元让命令行整条崩**：`KINDS` 白名单原来没有 `reference`，遇到
+  `reference:group-chat-archive-*` 直接 `throw`，`memory_status` / `list` 全挂。现在补上
+  `reference / identity / vault`（与 `lib/core.js` 的 ZONES 对齐）。
+- **`KINDS` / `ZONES` / `validId` 抽成单一真相源 `scripts/memory-kinds.mjs`**：
+  以前 decay 与外部写入脚本各存一份，每加一种 kind 就崩一次（session: → conv: → reference:）。
+- **词法召回把 `summary / aliases / keys` 算进去**：原来只拼 `id + title`，
+  单元里写的口语别名（「怎么点窗口里的按钮不看坐标」）永远命中不了。
+- **语义索引须随单元更新**：`local-ai/index.npz` 落后 15 小时时，新单元只剩字面命中。
+  建议写入后重建（工作区 `unit-add.mjs` 已自动后台重建）。
+- 自测：`SMOKE PASS: init / zones / injection / recall / archive`。
 
 ## 0.3.2 — 2026-11-09
 

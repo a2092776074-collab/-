@@ -1,4 +1,4 @@
-// memory-recall.mjs · 混合召回（词法 + 语义 RRF 融合；2026-11-09 v0.3.0）
+﻿// memory-recall.mjs · 混合召回（词法 + 语义 RRF 融合；2026-11-09 v0.3.0）
 //
 // 为什么改（实测依据）：
 //   旧版只在"字面一条都没中"时才退到语义，等于每次都得先赌字面能中。
@@ -58,6 +58,53 @@ for (const t of RAW_TOKENS) {
 }
 if (!TOKENS.size) TOKENS.add(kwLower)
 
+// ── 2026-11-10 查询扩展：基础认知（行政区划）+ 抽象认知（别名） ──
+// 只加「检索词」，不改答案：别名当参考、不当事实。
+// 例子：尔滨 → 哈尔滨 → 黑龙江省；大猫哥 → 海猫。
+const EXPANDED = new Set()
+try {
+  const aliasPath = join(ROOT, '数据', '知识', '别名.json')
+  if (existsSync(aliasPath)) {
+    const groups = JSON.parse(readFileSync(aliasPath, 'utf8'))
+    for (const g of groups) {
+      // 单元那种「问法同义句」不参与扩展（太长、会稀释），只用地名/人物/圈子
+      if (!['地名', '人物', '圈子'].includes(g.kind)) continue
+      const all = [g.canonical, ...(g.aliases || [])].filter(Boolean).map(String)
+      if (all.some((x) => x.length >= 2 && kwLower.includes(x.toLowerCase()))) {
+        for (const x of all) if (x.length >= 2) EXPANDED.add(x)
+      }
+    }
+  }
+  const divPath = join(ROOT, '数据', '知识', '行政区划.json')
+  if (existsSync(divPath)) {
+    const div = JSON.parse(readFileSync(divPath, 'utf8'))
+    for (const [city, prov] of Object.entries(div.cityToProvince || {})) {
+      if (city.length >= 2 && kwLower.includes(city)) {
+        EXPANDED.add(city)
+        if (prov) EXPANDED.add(String(prov))
+      }
+    }
+  }
+  // 职业树（2026-11-10）：问句里出现职业名 → 补它的中类/大类，方便找到「干这行的」记忆
+  const occPath = join(ROOT, '数据', '知识', '职业树.json')
+  if (existsSync(occPath)) {
+    const tree = JSON.parse(readFileSync(occPath, 'utf8'))
+    let best = null
+    for (const o of tree.occ || []) {
+      const name = String(o.name || '')
+      if (name.length < 2) continue
+      if (kwLower.includes(name) && (!best || name.length > best.name.length)) best = { name, path: String(o.path || '') }
+    }
+    if (best && best.path) {
+      EXPANDED.add(best.name)
+      // path 形如「大类/中类/小类/细类」，取前两层当宽词
+      const parts = best.path.split('/').filter(Boolean)
+      for (const p of parts.slice(0, 2)) if (p.length >= 2 && p !== best.name) EXPANDED.add(p)
+    }
+  }
+} catch {}
+for (const x of EXPANDED) if (x.toLowerCase() !== kwLower) TOKENS.add(x.toLowerCase())
+
 const hitCount = (text, toks) => {
   const s = String(text || '').toLowerCase()
   let n = 0
@@ -81,7 +128,7 @@ const frozenHidden = unitViews.filter(({ u, v }) => !u.superseded_by && v.frozen
 
 // 词法一路（标题 + id）
 const lexUnits = visible
-  .map((x) => ({ ...x, m: hitCount(x.u.id + ' ' + (x.u.title || ''), TOKENS) }))
+  .map((x) => ({ ...x, m: hitCount([x.u.id, x.u.title, x.u.summary, ...(x.u.aliases || []), ...(x.u.keys || [])].filter(Boolean).join(' '), TOKENS) }))
   .filter((x) => x.m > 0)
   .sort((a, b) => b.m - a.m || b.at - a.at)
 
@@ -134,7 +181,7 @@ if (!noSemantic && !aggMode && existsSync(join(ROOT, 'local-ai', 'index.npz'))) 
   let j = null
   // ① 先问常驻服务（~80ms，2026-11-09 加）
   try {
-    const url = `${process.env.SEMANTIC_URL || 'http://127.0.0.1:8791'}/q?text=${encodeURIComponent(kw)}&top=12`
+    const url = `${process.env.SEMANTIC_URL || 'http://127.0.0.1:8791'}/q?text=${encodeURIComponent(kw)}&top=12&units=8&md=4`
     const r = await fetch(url, { signal: AbortSignal.timeout(1200) })
     const t = await r.json()
     if (t && t.ok) j = t

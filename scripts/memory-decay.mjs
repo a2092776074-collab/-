@@ -1,4 +1,4 @@
-// memory-decay.mjs · 记忆代谢（FSRS-5 遗忘曲线）
+﻿// memory-decay.mjs · 记忆代谢（FSRS-5 遗忘曲线）
 //
 // 给每个记忆单元算「牢固度 S / 难度 D / 可提取度 R」。
 // 久不被想起 → R 下降；低于冻结线（默认 0.5）→ 冻结：不再自动想起、不注入，
@@ -62,8 +62,9 @@ function nextS(S, D, r, g) {
 // 这份白名单没跟上，导致 memory-recall 一碰到就抛「ID 不合法」直接崩。
 // 2026-11-07 深夜：每日 ingest 会生成 conv:*（对话事卡），白名单又没跟上，recall 再次崩。
 // 教训：KINDS 应该跟着「产生单元的人」一起改，而不是等崩了再补。
-const KINDS = ['case', 'diary', 'knowledge', 'ledger', 'anchor', 'episode', 'session', 'conv', 'task', 'goal']
-const validId = (id) => typeof id === 'string' && id.length <= 200 && KINDS.some((k) => id.startsWith(k + ':'))
+import { KINDS as KINDS_SHARED, validId as validIdShared } from './memory-kinds.mjs'
+const KINDS = KINDS_SHARED
+const validId = validIdShared
 
 function loadJson(p, fallback) {
   try {

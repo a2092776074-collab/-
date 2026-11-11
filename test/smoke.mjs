@@ -1,12 +1,15 @@
 import assert from 'node:assert/strict'
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { makeCore } from '../lib/core.js'
 
-const root = join(process.cwd(), 'tmp', 'smoke-' + Date.now())
+// 2026-11-11 修：原来拿 process.cwd() 当包根，从别的目录跑就找不到 template，
+// 会误报 "init should create template files" 失败。改成按本文件位置推包根。
+const pluginRoot = dirname(dirname(fileURLToPath(import.meta.url)))
+const root = join(pluginRoot, 'tmp', 'smoke-' + Date.now())
 rmSync(root, { recursive: true, force: true })
 mkdirSync(root, { recursive: true })
-const pluginRoot = process.cwd()
 const core = makeCore({ root, pluginRoot })
 
 const init = core.init()
